@@ -1,0 +1,150 @@
+
+
+
+* Basic Commands and Functions
+
+ mouse_click(x=None, y=None, delay=None):
+ mouse_move(x, y, speed=None):
+ write_text(text, word_per_minute=None):
+
+ mouse_move_relative(dx, dy, delay=0.75)
+ mouse_move_slow(x, y, delay=0.75):
+
+
+ mouse_position():
+ screen_size():
+ mouse_in_region(region):
+
+ screen_capture_save(path, region=None, name=None):
+
+ screen_capture(region=None):
+ screen_capture_save(path, region=None, name=None):
+
+ mouse_move_delayed(x, y, delay, ticks=100):
+
+
+ mouse_centre():
+
+ sine_mouse_wave():
+ zig_zag(divisions, delay):
+
+ --------------------------------------------------
+ negate_number(number):
+ simple_date_text():
+
+
+ color_rgb_to_hex()
+ color_hex_to_rgb()
+
+
+
+
+* Project
+
+
+
+
+** Session #1
+ sx = 0                                                                                                                                                                                                    
+ tx = 100                                                                                                                                                                                                  
+ speed = 0.5 #pixels per millsecond (500 pixels per second)                                                                                                                                                
+ dx = 10                                                                                                                                                                                                   
+ abs(dx - tx)                                                                                                                                                                                              
+ 90
+ st = 0                                                                                                                                                                                                    
+ ct = 0.3                                                                                                                                                                                                  
+ abs(dx - tx) / tx                                                                                                                                                                                         
+ 
+ cx = 10          
+
+
+
+ sx - start-x
+ tx - target-x
+ speed - pixels-per-millsecond
+ cx - current-x
+ ct - current-time
+ 
+
+
+# How much must I move given the current time-left?                                                                                                                                                      
+
+#+BEGIN_SRC python
+abs ( cx - tx ) # This is how much I have moved, total
+#+END_SRC
+
+# How much time has already elapsed?
+
+#+BEGIN_SRC python
+abs( ct - st )   # This is how much time has elapsed, total
+#+END_SRC
+
+# Considering I have `0.2` more milliseconds left -- how much should I move to compensate?
+
+#+BEGIN_VERSE
+time-progress = elapsed-time / time-left # As Ratio
+
+time-left = current-time - end-time
+end-time = start-time + delay
+
+units-moved = start-x - current-x
+
+units-left = target-x - current-x
+
+next-x = current-x + :how-much-space-per-time:
+
+
+next-x = current-x + time-left * units-left
+
+units-left = current-x - target-x
+
+time-left = current-time - end-time
+
+
+#+END_VERSE
+
+
+# Considering I have 90 units left                                                                                                                                                                        
+
+------------------------------
+#         I SHOULD ASK :
+
+# HOW MUCH HAVE I TRAVELLED SO FAR, AND HOW MUCH SHOULD I TRAVEL IN THE CURRENT STATE 
+
+
+
+
+** Session #2
+
+
+*** The `mouse_move_delayed' bug
+
+#+BEGIN_SRC python
+    nx = sx + (x - sx) * (ct - st) / delay
+    ny = sy + (y - sy) * (ct - st) / delay
+#+END_SRC
+
+This code is resulting in:
+
+#+BEGIN_VERSE
+ValueError: Point out of bounds
+#+END_VERSE
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
