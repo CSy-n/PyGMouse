@@ -65,14 +65,16 @@ def mouse_move_delayed(x, y, delay=0.75):
     nx = sx + (x - sx) * (ct - st) / delay
     ny = sy + (y - sy) * (ct - st) / delay
 
-    if nx == x and ny == y:
-        break
-    if ny < 0:
-        print(f"ny: {ny}, sy: {sy}, y: {y}, ct: {ct}, delay: {delay}")
 
-    mouse_move(nx, ny)
+    try:
+      mouse_move(nx, ny)
+    except Exception as e:
+      print(f"ny: {ny}, sy: {sy}, y: {y}")
+      print(f"ct: {ct}, delay: {delay}")
+      print(e)
+      print("="*80)
+
     time.sleep(random.uniform(0.001, 0.003))
-
 
 def mouse_position():
     return autopy.mouse.location() 
