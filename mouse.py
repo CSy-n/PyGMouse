@@ -4,6 +4,7 @@ import time
 import random
 import sys
 import os
+import math
 from datetime import datetime
 
 TWO_PI = math.pi * 2.0
@@ -37,6 +38,12 @@ def mouse_move(x=None, y=None, speed=None):
   else:
     mouse_move_delayed(x, y, speed)
 
+
+
+# Simply an alias for `mouse_move'
+def mouse_move_absolute(x=None, y=None, speed=None):
+    mouse_move(x, y, speed)
+    
 # moves mouse relative to coordinates,
 # Negative is left, positive is right
 # CONSIDERATIONS:
@@ -52,29 +59,40 @@ def mouse_move_relative(dx=None, dy=None, delay=None):
   else:
       mouse_move((sx + dx), (sy + dy), delay)
 
+# Checks incase of time-excede bug
+# CONSIDERATIONS:
+# Handles Point out of Bounds Badly.
 def mouse_move_delayed(x, y, delay=0.75):
   sx, sy = mouse_position()
   ct = st = current_time()
 
-  end_time = delay + st
+  et = delay + st
 
-  while ct <= end_time:
+  while ct <= et:
     ct = current_time()
     cx, cy = mouse_position()
 
     nx = sx + (x - sx) * (ct - st) / delay
     ny = sy + (y - sy) * (ct - st) / delay
 
+    # Incase the time is exceded
+    if ct - et > 0:
+      nx = x
+      ny = y
 
     try:
       mouse_move(nx, ny)
     except Exception as e:
-      print(f"ny: {ny}, sy: {sy}, y: {y}")
-      print(f"ct: {ct}, delay: {delay}")
+      print(f"nx: {nx}, sx: {sx}, x: {x}")
+      print(f"ct: {ct}, st: {st}, et: {et}, delay: {delay}")
       print(e)
       print("="*80)
+      print(f"(ct - st): {(ct - st)}")
+      print(f"(x - sx): {(x - sx)}")
+      raise e
 
     time.sleep(random.uniform(0.001, 0.003))
+
 
 def mouse_position():
     return autopy.mouse.location() 
@@ -88,7 +106,6 @@ def mouse_in_region(region):
     mx, my = mouse_position()
     rx, ry, width, height = region
     if mx > rx and mx < rx + width and my > ry and my < ry + height:
-        print("In Region!")
         return True
     return False
 
@@ -114,21 +131,77 @@ def mouse_centre():
     mouse_move(width / 2, height / 2)
 
 
+def circle_mouse(radius, delay=1.5, resolution=100):
+    width, height = screen_size()
+    cw = width / 2
+    iterations = resolution
 
-# def zig_zag(divisions, delay):
-#     width, height = screen_size()
-#     dw = width/divisions
-#     dh = height/divisions
+    # Bigger it is faster the gaps,
 
-#     mouse_centre()
+    # mouse_centre()
 
-#     for division in range(1, divisions):
-#         dx = division * dw
-#         dy = division * dy
-#         mouse_move_delayed(dx, dy, delay)
-#         mouse_move_delayed(dx, dy, delay)
-#         mouse_move_delayed(dw*(division+1), dh*division, delay)
-#         mouse_move_delayed(dw*(division), dh*(division), delay)
+    # First we just want to make it go around a circle at 1 degrees
+    c = radius / (iterations / (2 * math.pi))
+    for iteration in range(1, iterations + 1):
+        nx = c*math.cos( math.radians(iteration * 360 / iterations) )
+        ny = c*math.sin( math.radians(iteration * 360 / iterations) )
+        
+        mouse_move_relative(nx, ny, delay / iterations)
+
+
+def circle_mouse(radius, delay=1.5, resolution=100):
+    width, height = screen_size()
+    sx, sy = mouse_position()
+    sy -= radius
+    cw = width / 2
+    
+    
+    # Bigger it is faster the gaps,
+
+    # mouse_centre()
+
+    # First we just want to make it go around a circle at 1 degrees
+    for iteration in range(1, iterations + 1):
+        nx = sx + radius * math.cos(math.radians(iteration * 360 / iterations))
+        ny = sy + radius * math.sin(math.radians(iteration * 360 / iterations) )
+
+        mouse_move_absolute(nx, ny, delay / iterations)
+
+        
+    
+    c = radius / (iterations / (2 * math.pi))
+    for iteration in range(1, iterations + 1):
+        nx = c*math.cos( math.radians(iteration * 360 / iterations) )
+        ny = c*math.sin( math.radians(iteration * 360 / iterations) )
+        
+        mouse_move_relative(nx, ny, delay / resolution)
+    
+    
+
+
+
+def zig_zag(divisions, delay=1.5):
+    width, height = screen_size()
+
+    # Offset for Region on Screen
+    ox = width / 3
+    oy = height / 5
+
+    # Region Occupied accounted for Top-Bottom
+    dw = width / divisions
+    dh = (height - oy * 2) / divisions
+
+    cw = width / 2
+
+    # Set Mouse at Centre
+    mouse_centre()
+
+    for division in range(divisions):
+        x = ox
+        y = oy + division * dh
+        mouse_move_delayed(x, y, delay)
+        mouse_move_delayed(x + abs(ox - cw) * 2, y, delay)
+
 
 
 def sine_mouse_wave():
@@ -136,14 +209,14 @@ def sine_mouse_wave():
     Moves the mouse in a sine wave from the left edge of
     the screen to the right.
     """
-    width, height = autopy.screen.size()
+    width, height = screen_size()
     height /= 2
     height -= 10  # Stay in the screen bounds.
 
     for x in range(int(width)):
         y = int(height * math.cos((2* TWO_PI * x) / width) + height)
         autopy.mouse.move(x, y)
-        time.sleep(random.uniform(0.001, 0.003))
+        time.sleep(random.uniform(0.0006, 0.00009))
 
 
 
