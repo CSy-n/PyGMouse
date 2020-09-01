@@ -133,27 +133,25 @@ def mouse_centre():
 
 def circle_mouse(radius, delay=1.5, resolution=100):
     width, height = screen_size()
+    sx, sy = mouse_position()
+    sx -= radius
     cw = width / 2
-    iterations = resolution
-
-    # Bigger it is faster the gaps,
 
     # mouse_centre()
 
     # First we just want to make it go around a circle at 1 degrees
-    c = radius / (iterations / (2 * math.pi))
-    for iteration in range(1, iterations + 1):
-        nx = c*math.cos( math.radians(iteration * 360 / iterations) )
-        ny = c*math.sin( math.radians(iteration * 360 / iterations) )
-        
-        mouse_move_relative(nx, ny, delay / iterations)
+    for iteration in range(1, resolution + 1):
+        nx = sx + radius * math.cos(math.radians(iteration * 360 / resolution))
+        ny = sy + radius * math.sin(math.radians(iteration * 360 / resolution) )
+
+        mouse_move_absolute(nx, ny, delay / resolution)
 
 
-def circle_mouse(radius, delay=1.5, resolution=100):
+def swirl_mouse(radius, swirls=3, delay=1.5, resolution=100):
     width, height = screen_size()
     sx, sy = mouse_position()
-    sy -= radius
     cw = width / 2
+    sx -= radius
     
     
     # Bigger it is faster the gaps,
@@ -161,24 +159,14 @@ def circle_mouse(radius, delay=1.5, resolution=100):
     # mouse_centre()
 
     # First we just want to make it go around a circle at 1 degrees
-    for iteration in range(1, iterations + 1):
-        nx = sx + radius * math.cos(math.radians(iteration * 360 / iterations))
-        ny = sy + radius * math.sin(math.radians(iteration * 360 / iterations) )
+    for iteration in list(range(1, swirls * resolution + 1)) + list(range(swirls * resolution - 1, 0, -1)):
+        r = radius * iteration / resolution
+        nx = sx + r * math.cos(math.radians(iteration * 360 / resolution))
+        ny = sy + r * math.sin(math.radians(iteration * 360 / resolution) )
 
-        mouse_move_absolute(nx, ny, delay / iterations)
-
+        mouse_move_absolute(nx, ny, delay / resolution / swirls)
         
-    
-    c = radius / (iterations / (2 * math.pi))
-    for iteration in range(1, iterations + 1):
-        nx = c*math.cos( math.radians(iteration * 360 / iterations) )
-        ny = c*math.sin( math.radians(iteration * 360 / iterations) )
-        
-        mouse_move_relative(nx, ny, delay / resolution)
-    
-    
-
-
+    mouse_move(sx, sy)
 
 def zig_zag(divisions, delay=1.5):
     width, height = screen_size()
