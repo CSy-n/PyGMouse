@@ -21,9 +21,9 @@ def mouse_click(x=None, y=None, delay=None):
 # Convenience wrapper around toggle() that holds down and then
 # releases the given mouse button. By default, the left button is
 # pressed.
-# speed: float (pixels per second)
+# delay: float (pixels per second)
 
-def mouse_move(x=None, y=None, speed=None):
+def mouse_move(x=None, y=None, delay=None):
 
     
   # print("Coords: ", x, y)
@@ -33,16 +33,16 @@ def mouse_move(x=None, y=None, speed=None):
   if y is None:
       y = 0
       
-  if speed is None:
+  if delay is None:
     autopy.mouse.move(x, y)
   else:
-    mouse_move_delayed(x, y, speed)
+    mouse_move_delayed(x, y, delay)
 
 
 
 # Simply an alias for `mouse_move'
-def mouse_move_absolute(x=None, y=None, speed=None):
-    mouse_move(x, y, speed)
+def mouse_move_absolute(x=None, y=None, delay=None):
+    mouse_move(x, y, delay)
     
 # moves mouse relative to coordinates,
 # Negative is left, positive is right
@@ -147,11 +147,11 @@ def circle_mouse(radius, delay=1.5, resolution=100):
         mouse_move_absolute(nx, ny, delay / resolution)
 
 
-def swirl_mouse(radius, swirls=3, delay=1.5, resolution=100):
+def spiral_mouse(radius, swirls=3, delay=1.5, resolution=100):
     width, height = screen_size()
     sx, sy = mouse_position()
     cw = width / 2
-    sx -= radius
+    # sx -= radius
     
     
     # Bigger it is faster the gaps,
@@ -159,14 +159,15 @@ def swirl_mouse(radius, swirls=3, delay=1.5, resolution=100):
     # mouse_centre()
 
     # First we just want to make it go around a circle at 1 degrees
-    for iteration in list(range(1, swirls * resolution + 1)) + list(range(swirls * resolution - 1, 0, -1)):
+    for iteration in list(range(1, swirls * resolution + 1)):
+        # + list(range(swirls * resolution - 1, 0, -1)):
         r = radius * iteration / resolution
         nx = sx + r * math.cos(math.radians(iteration * 360 / resolution))
         ny = sy + r * math.sin(math.radians(iteration * 360 / resolution) )
 
         mouse_move_absolute(nx, ny, delay / resolution / swirls)
         
-    mouse_move(sx, sy)
+    mouse_move(sx, sy, 0.4)
 
 def zig_zag(divisions, delay=1.5):
     width, height = screen_size()
@@ -192,7 +193,7 @@ def zig_zag(divisions, delay=1.5):
 
 
 
-def sine_mouse_wave():
+def sine_mouse_wave(delay=1.5):
     """
     Moves the mouse in a sine wave from the left edge of
     the screen to the right.
@@ -200,11 +201,23 @@ def sine_mouse_wave():
     width, height = screen_size()
     height /= 2
     height -= 10  # Stay in the screen bounds.
+    # width / range(0.0006, 0.00009)
 
+    # Time how long it is at the moment
+    delay = 0.0003 * delay / 1.5
+    # This is highly dependent-upon Clock Speed
+    # Which is not what we want to do;
+
+    # We want it to be based upon the elapsed time in reference to scale
+    # Much like how mouse_move_delayed works
+    
     for x in range(int(width)):
         y = int(height * math.cos((2* TWO_PI * x) / width) + height)
-        autopy.mouse.move(x, y)
-        time.sleep(random.uniform(0.0006, 0.00009))
+        mouse_move(x, y)
+        time.sleep(delay)
+
+        
+    mouse_centre()
 
 
 
@@ -230,4 +243,3 @@ def distance_from(sp, ep):
      ex, ey = ep 
      return math.sqrt(  math.pow(abs( sx - ex), 2) +  math.pow(abs( sy - ey ), 2))
 
-sine_mouse_wave()
