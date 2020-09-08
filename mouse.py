@@ -24,10 +24,7 @@ def mouse_click(x=None, y=None, delay=None):
 # delay: float (pixels per second)
 
 def mouse_move(x=None, y=None, delay=None):
-
-    
   # print("Coords: ", x, y)
-
   if x is None:
       x = 0
   if y is None:
@@ -98,6 +95,10 @@ def mouse_position():
     return autopy.mouse.location() 
 
 
+def mouse_visible(x, y):
+    return autopy.screen.is_point_visible(x, y)
+
+
 def screen_size():
     return autopy.screen.size()
 
@@ -113,7 +114,7 @@ def mouse_in_region(region):
 def screen_capture(region=None):
     if region is not None:
         x, y, width, height = region
-        return autopy.bitmap.capture_screen( ((x,y), (width,height)) )
+        return autopy.bitmap.capture_screen( ((x,y), (width, height)) )
     return autopy.bitmap.capture_screen()
 
 def screen_capture_save(path, region=None, name=None):
@@ -121,30 +122,105 @@ def screen_capture_save(path, region=None, name=None):
         name = 'img-' + simple_date_text() + '.png'
     os.path.join(path, name)
     # Capture Region of Screen:
-    image = capture_screen(region)
+    image = screen_capture(region)
     image.save( os.path.join(path, name) )
     
-
 
 def mouse_centre():
     width, height = autopy.screen.size()
     mouse_move(width / 2, height / 2)
 
 
+# MAKE A CIRCLE!
+
 def circle_mouse(radius, delay=1.5, resolution=100):
     width, height = screen_size()
     sx, sy = mouse_position()
-    sx -= radius
+    # sx -= radius
     cw = width / 2
+    st = ct = current_time()
+    et = st + delay
 
     # mouse_centre()
+    circumference = TWO_PI * radius
 
-    # First we just want to make it go around a circle at 1 degrees
-    for iteration in range(1, resolution + 1):
-        nx = sx + radius * math.cos(math.radians(iteration * 360 / resolution))
-        ny = sy + radius * math.sin(math.radians(iteration * 360 / resolution) )
+    # The Resolution is relative to how much *time* there is,
+    # - How big the Raduis is
+    # - How much space is left
+    # - How much time is left?
+    # print(f"Start... sx: {sx}, sy: {sy}")
 
-        mouse_move_absolute(nx, ny, delay / resolution)
+    # A higher Resolution indiciates:
+    # More precise movements
+    # More Movements made
+
+    # Lower Resolution indicates:
+    # Less Movements Made
+    # More Sleep time
+    # iteration = resolution
+
+    # resolution / 100 * D/R
+    # Relationship of Radius to Delay
+    # Radius * Delay
+    # iterations = 1
+    while ct - et < 0:
+      ct = current_time()
+      cx, cy = mouse_position()
+
+      # The next position, is determined by how much time has elapsed.
+      # So if 1/5 the time has elapsed approximately, then
+      # It should be half way around the circle!
+
+      elapsed = abs(ct - st)
+      progress = elapsed / abs(st - et)
+
+      nx = sx + radius * math.cos(math.radians(360 * progress)) - radius
+      ny = sy + radius * math.sin(math.radians(360 * progress))# - radius
+
+      if ct - et > 0:
+        # nx = sx + radius * math.cos(math.radians(360))
+        # ny = sy + radius * math.sin(math.radians(360))
+        nx = sx
+        ny = sy
+        # print(f"nx: {nx}, ny: {ny}")
+        # print(f"sx: {sx}, sy: {sy}")
+
+      # iterations += 1
+      # print(f"progress: {progress}")
+      # print(f"elapsed: {elapsed}")
+      # print(f"nx: {nx}, sx: {sx}")
+      time.sleep(100 / resolution * delay / radius)
+      # iteration -= 1
+
+      mouse_move(nx, ny)
+    # print(iterations)
+
+
+# def circle_mouse(radius, delay=1.5, resolution=100):
+#     width, height = screen_size()
+#     sx, sy = mouse_position()
+#     sx -= radius
+#     cw = width / 2
+#     ct = current_time()
+#     et = ct + delay
+
+#     # mouse_centre()
+#     circumference = TWO_PI * radius
+
+
+#     while ct - et < 0:
+#       ct = current_time()
+
+#       if ct - et > 0:
+#         nx = sx + radius * math.cos(math.radians(360))
+#         ny = sy + radius * math.sin(math.radians(360))
+
+
+#       nx = sx + r * math.cos(math.radians(iteration * 360 / resolution))
+#       ny = sy + r * math.sin(math.radians(iteration * 360 / resolution))
+
+
+
 
 
 def spiral_mouse(radius, swirls=3, delay=1.5, resolution=100):
@@ -155,19 +231,24 @@ def spiral_mouse(radius, swirls=3, delay=1.5, resolution=100):
     
     
     # Bigger it is faster the gaps,
+    # Work out how long a radius is. . .
+    # A circle is 2 * pi * r
 
     # mouse_centre()
+    nx = 0
+    ny = 0
 
     # First we just want to make it go around a circle at 1 degrees
-    for iteration in list(range(1, swirls * resolution + 1)):
+    for iteration in list(range(1,  swirls * resolution )):
         # + list(range(swirls * resolution - 1, 0, -1)):
-        r = radius * iteration / resolution
+        r = radius / swirls * iteration / resolution
         nx = sx + r * math.cos(math.radians(iteration * 360 / resolution))
-        ny = sy + r * math.sin(math.radians(iteration * 360 / resolution) )
+        ny = sy + r * math.sin(math.radians(iteration * 360 / resolution))
+        # time.sleep(0.7)
 
         mouse_move_absolute(nx, ny, delay / resolution / swirls)
-        
-    mouse_move(sx, sy, 0.4)
+    # print(nx, ny)
+    mouse_move(sx, sy, 0.5 + 1 / radius / resolution)
 
 def zig_zag(divisions, delay=1.5):
     width, height = screen_size()

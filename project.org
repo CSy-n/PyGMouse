@@ -3,38 +3,46 @@
 
 * Basic Commands and Functions
 
- mouse_click(x=None, y=None, delay=None):
- mouse_move(x, y, speed=None):
- write_text(text, word_per_minute=None):
 
- mouse_move_relative(dx, dy, delay=0.75)
- mouse_move_slow(x, y, delay=0.75):
+# Actions 
+ mouse_click(x=None, y=None, delay=None)
+ write_text(text, word_per_minute=None)
+ mouse_move(x=None, y=None, delay=None)
+
+# Movements
+ mouse_move_absolute(x=None, y=None, delay=None)
+ mouse_move_relative(dx=None, dy=None, delay=None)
+ mouse_move_delayed(x, y, delay=0.75)
+
+# Common Queries
+ mouse_position()
+ screen_size()
+
+# 
+ mouse_in_region(region)
+
+# Screen
+ screen_capture(region=None)
+ screen_capture_save(path, region=None, name=None)
+
+# MISC
+ mouse_centre()
+
+# Motions / Patterns
+ circle_mouse(radius, delay=1.5, resolution=100)
+ spiral_mouse(radius, swirls=3, delay=1.5, resolution=100)
+ zig_zag(divisions, delay=1.5)
+ sine_mouse_wave(delay=1.5)
 
 
- mouse_position():
- screen_size():
- mouse_in_region(region):
+# Utility
+ negate_number(number)
+ simple_date_text()
+ current_time()
+ create_delay(delay)
+ distance_from(sp, ep) 
 
- screen_capture_save(path, region=None, name=None):
-
- screen_capture(region=None):
- screen_capture_save(path, region=None, name=None):
-
- mouse_move_delayed(x, y, delay, ticks=100):
-
-
- mouse_centre():
-
- sine_mouse_wave():
- zig_zag(divisions, delay):
-
- --------------------------------------------------
- negate_number(number):
- simple_date_text():
-
-
- color_rgb_to_hex()
- color_hex_to_rgb()
+--------------------------------------------------
 
 
 
@@ -146,5 +154,32 @@ ValueError: Point out of bounds
 
 
 
+
+
+
+
+
+** Session #3
+
+
+
+
+ - A circle is 2 * pi * r
+ - Each `swirl' is 2 Radians - theta
+ 
+
+circumference = 2 * pi * r * resolution
+length = radius * circumference 
+
+
+n = dy
+
+n = ie
+
+
+
+#+BEGIN_SRC python
+r = 
+#+END_SRC
 
 

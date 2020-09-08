@@ -2,6 +2,7 @@
 from mouse import *
 
 
+width, height = screen_size()
 
 
 sine_mouse_wave()
@@ -13,8 +14,25 @@ mouse_centre()
 time.sleep(1)
 
 
-for i in range(5):
-  spiral_mouse(i * 30 + 30)
+circle_mouse(300)
+
+# Wait a moment. . .
+time.sleep(0.8)
+
+
+
+spiral_mouse(height / 2, 15) 
+
+# iterations = 5
+# for i in range(iterations):
+
+#   # r - radius
+#   # height - height
+#   radius = i / iterations * (height / 2 - 30) 
+#   spiral_mouse(30 + radius - 5)
+#   print(f"Iteration: {i}; Radius: {radius}")
+#   print(f"i / iterations: {i/iterations}; height: {height}")
+#   # time.sleep(2)
 
 # Wait a moment . . .
 time.sleep(1)
